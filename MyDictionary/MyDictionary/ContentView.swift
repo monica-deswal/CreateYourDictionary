@@ -17,6 +17,7 @@ struct ContentView: View {
     @State var sentense = ""
     
     @State var wordModel: DictWord?
+    @State var shouldHide = false
     
     @State private var opacity: Double = 1
     
@@ -40,6 +41,26 @@ struct ContentView: View {
                         .opacity(opacity)
                         .font(.largeTitle)
                         .padding(5)
+                    
+                    if !shouldHide {
+                        
+                        Button("Show The Answer") {
+                            
+                            withAnimation(.linear(duration: 0.45), {
+                                type = wordModel?.usageType ?? ""
+                                meaning = wordModel?.meaning ?? ""
+                                sentense = wordModel?.sentense ?? ""
+                            })
+                           shouldHide = true
+                        }.font(.title2)
+                            .background(Color(red: 227/255
+                                                   , green: 239/255
+                                                   , blue: 205/255))
+                          .foregroundColor(Color.black)
+                          .padding([.top], 180)
+                    } else {
+                        
+                    }
                     
                     Text(self.type)
                         .opacity(opacity)
@@ -66,22 +87,12 @@ struct ContentView: View {
                 Spacer()
                 HStack(spacing: 45) {
                     
-                    Button("Show The Answer") {
-                        
-                        withAnimation(.linear(duration: 0.45), {
-                            type = wordModel?.usageType ?? ""
-                            meaning = wordModel?.meaning ?? ""
-                            sentense = wordModel?.sentense ?? ""
-                            })
-                        
-                    }.font(.title2)
-                      .foregroundColor(Color.black)
-                    
                     Button("Move to Next ") {
                         withAnimation(.easeInOut(duration: 0.5), {
                             self.opacity = 0
                         })
                         
+                        self.shouldHide = false
                         self.wordModel = self.dictionaryViewModel.generateTherandomElement()
                         
                         withAnimation(.easeInOut(duration: 1), {
