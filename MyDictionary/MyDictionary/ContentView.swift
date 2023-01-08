@@ -16,47 +16,83 @@ struct ContentView: View {
     @State var meaning = ""
     @State var sentense = ""
     
+    @State var wordModel: DictWord?
+    
+    @State private var opacity: Double = 1
+    
     var body: some View {
         
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text(self.word)
-                .font(.title)
+        ZStack {
             
-            Text(self.type)
-                .font(.title)
-            
-            Text(self.meaning)
-                .font(.title)
-            
-            Spacer()
-            Spacer()
-            HStack{
+            VStack {
+                Text("Learn the word")
+                    .font(.title)
+                    .padding([.top, .bottom], 50)
                 
-                Button("Show The Answer") {
+                VStack(spacing: 10) {
+                    Text(self.word.uppercased())
+                        .opacity(opacity)
+                        .font(.largeTitle)
+                        .padding(5)
                     
-                }.padding(12)
-                    .font(.body)
-                    .foregroundColor(Color.green)
+                    Text(self.type)
+                        .opacity(opacity)
+                        .font(.body)
+                    
+                    Text(self.meaning)
+                        .multilineTextAlignment(.center)
+                        .opacity(opacity)
+                        .font(.title)
+                        .padding(10)
+                    
+                    Text(self.sentense)
+                        .multilineTextAlignment(.center)
+                        .opacity(opacity)
+                        .font(.title)
+                        .padding([.leading, .trailing], 5)
+                        .padding([.bottom], 10)
+                }.background(Color.purple)
+                    .cornerRadius(20)
                 
                 Spacer()
-                Button("Move to Next ") {
-                    word = "111"
-                    type = "2222"
-                    meaning = "3333"
-                    sentense = "4444"
-                }.padding(12)
-                    .font(.body)
-                    .foregroundColor(Color.green)
-                
-                
+                HStack {
+                    
+                    Button("Show The Answer") {
+                        
+                        
+                        withAnimation(.linear(duration: 0.45), {
+                            type = wordModel?.usageType ?? ""
+                            meaning = wordModel?.meaning ?? ""
+                            sentense = wordModel?.sentense ?? ""
+                            })
+                        
+                    }.padding(5)
+                        
+                        .font(.title3)
+                        .foregroundColor(Color.black)
+                    
+                    Spacer()
+                    Button("Move to Next ") {
+                        withAnimation(.easeInOut(duration: 0.5), {
+                            self.opacity = 0
+                        })
+                        
+                        self.wordModel = self.dictionaryViewModel.generateTherandomElement()
+                        
+                        withAnimation(.easeInOut(duration: 1), {
+                            word = wordModel?.word ?? ""
+                            type = ""
+                            meaning = ""
+                            sentense = ""
+                            self.opacity = 1
+                        })
+                        
+                    }.padding(5)
+                        .font(.title3)
+                        .foregroundColor(Color.black)
+                }
             }
-            Spacer()
-            
-        }
-        .padding()
+        }.padding(40)
     }
 }
 

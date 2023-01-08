@@ -9,21 +9,28 @@ import Foundation
 import Combine
 import SwiftUI
 
-class DictionaryViewModel: ObservableObject {
+class DictionaryViewModel {
     
-    @Published var modelObject: DictWord?
+    var modelObject: [DictWord]?
     
     init() {
         let url = Bundle.main.url(forResource: "DictionaryObject", withExtension: "json")!
         do {
             let data = try? Data(contentsOf: url)
-            let myDictModel = try? JSONDecoder().decode(MyDictModel.self, from: data!)
-            print("the value of the data model \(myDictModel)")
-            self.modelObject = myDictModel?.words!.first
+            let model = try? JSONDecoder().decode(MyDictModel.self, from: data!)
+            print("the value of the data model \(model)")
+            self.modelObject = model?.words
+            print("the value of the data model \(modelObject)")
         } catch let error {
             print("there is some error \(error)")
         }
     }
+    
+    
+    func generateTherandomElement() -> DictWord? {
+        return modelObject?.randomElement() ?? nil
+    }
+    
    
 }
 
@@ -46,12 +53,14 @@ struct MyDictModel : Codable {
 struct DictWord : Codable {
     let word : String?
     let usageType : String?
+    let meaning: String?
     let sentense : String?
 
     enum CodingKeys: String, CodingKey {
 
         case word = "Word"
         case usageType = "UsageType"
+        case meaning = "Meaning"
         case sentense = "Sentense"
     }
 
@@ -59,6 +68,7 @@ struct DictWord : Codable {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         word = try values.decodeIfPresent(String.self, forKey: .word)
         usageType = try values.decodeIfPresent(String.self, forKey: .usageType)
+        meaning = try values.decodeIfPresent(String.self, forKey: .meaning)
         sentense = try values.decodeIfPresent(String.self, forKey: .sentense)
     }
 
