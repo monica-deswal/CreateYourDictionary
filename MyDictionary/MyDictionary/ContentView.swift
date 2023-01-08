@@ -23,11 +23,17 @@ struct ContentView: View {
     var body: some View {
         
         ZStack {
+            Image("background-image3")
+                  .resizable()
+                  .scaledToFill()
+                  .edgesIgnoringSafeArea(.all)
             
             VStack {
                 Text("Learn the word")
                     .font(.title)
-                    .padding([.top, .bottom], 50)
+                    .padding([.top], -40)
+                Spacer()
+                Spacer()
                 
                 VStack(spacing: 10) {
                     Text(self.word.uppercased())
@@ -41,24 +47,26 @@ struct ContentView: View {
                     
                     Text(self.meaning)
                         .multilineTextAlignment(.center)
+                        .foregroundColor(Color(red: 36/255
+                                               , green: 55/255
+                                               , blue: 99/255))
                         .opacity(opacity)
-                        .font(.title)
-                        .padding(10)
+                        .font(.title2)
+                        .padding([.leading, .trailing], 80)
                     
                     Text(self.sentense)
                         .multilineTextAlignment(.center)
+                        .foregroundColor(Color(red: 60/255
+                                               , green: 98/255
+                                               , blue: 85/255))
                         .opacity(opacity)
-                        .font(.title)
-                        .padding([.leading, .trailing], 5)
-                        .padding([.bottom], 10)
-                }.background(Color.purple)
-                    .cornerRadius(20)
-                
+                        .font(.title2)
+                        .padding([.leading, .trailing], 80)
+                }.padding([.leading, .trailing], 15)
                 Spacer()
-                HStack {
+                HStack(spacing: 45) {
                     
                     Button("Show The Answer") {
-                        
                         
                         withAnimation(.linear(duration: 0.45), {
                             type = wordModel?.usageType ?? ""
@@ -66,12 +74,9 @@ struct ContentView: View {
                             sentense = wordModel?.sentense ?? ""
                             })
                         
-                    }.padding(5)
-                        
-                        .font(.title3)
-                        .foregroundColor(Color.black)
+                    }.font(.title2)
+                      .foregroundColor(Color.black)
                     
-                    Spacer()
                     Button("Move to Next ") {
                         withAnimation(.easeInOut(duration: 0.5), {
                             self.opacity = 0
@@ -86,12 +91,10 @@ struct ContentView: View {
                             sentense = ""
                             self.opacity = 1
                         })
-                        
-                    }.padding(5)
-                        .font(.title3)
-                        .foregroundColor(Color.black)
-                }
-            }
+                    }.font(.title2)
+                    .foregroundColor(Color.black)
+                }.padding(.bottom, 0)
+            }.padding([.leading, .trailing], 15)
         }.padding(40)
     }
 }
@@ -99,5 +102,17 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+    }
+}
+
+
+extension UIImage {
+
+    func alpha(_ value:CGFloat) -> UIImage {
+        UIGraphicsBeginImageContextWithOptions(size, false, scale)
+        draw(at: CGPoint.zero, blendMode: .normal, alpha: value)
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return newImage!
     }
 }
