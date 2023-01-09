@@ -103,7 +103,6 @@ struct ContentView: View {
             }.padding([.leading, .trailing], 15)
         }.padding(40)
             .onReceive(dictionaryViewModel.dictWordSubject.publisher) { dictWordValue in
-                
                 dictWord = dictWordValue
             }
     }
