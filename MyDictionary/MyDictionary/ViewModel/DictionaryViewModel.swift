@@ -13,7 +13,7 @@ enum FetchError: Error {
     case unableToRetriveData
 }
 
-class DictionaryViewModel: ObservableObject {
+class DictionaryViewModel {
     
     var modelObject: [DictWord]?
     @Published var dictWordSubject: DictWord?
