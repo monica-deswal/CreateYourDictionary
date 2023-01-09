@@ -23,7 +23,7 @@ class DictionaryViewModel: ObservableObject {
         do {
             let data = try? Data(contentsOf: url)
             let model = try? JSONDecoder().decode(MyDictModel.self, from: data!)
-            let modelObject = model?.words?.compactMap({ $0 })
+            let modelObject = model?.words?.filter { $0.word != nil }
             self.modelObject = modelObject
             updateTheObserver()
         } catch let error {
