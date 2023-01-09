@@ -6,28 +6,27 @@
 //
 
 import SwiftUI
+import Combine
 
 struct ContentView: View {
     
     let dictionaryViewModel = DictionaryViewModel()
-    
-    @State var word = ""
     @State var type = ""
     @State var meaning = ""
     @State var sentense = ""
     
-    @State var wordModel: DictWord?
     @State var shouldHide = false
-    
+
     @State private var opacity: Double = 1
+    @State var dictWord: DictWord?
     
     var body: some View {
         
         ZStack {
             Image("background-image3")
-                  .resizable()
-                  .scaledToFill()
-                  .edgesIgnoringSafeArea(.all)
+                .resizable()
+                .scaledToFill()
+                .edgesIgnoringSafeArea(.all)
             
             VStack {
                 Text("Learn the word")
@@ -37,7 +36,7 @@ struct ContentView: View {
                 Spacer()
                 
                 VStack(spacing: 10) {
-                    Text(self.word.uppercased())
+                    Text((self.dictWord?.word ?? "").uppercased())
                         .opacity(opacity)
                         .font(.largeTitle)
                         .padding(5)
@@ -45,21 +44,18 @@ struct ContentView: View {
                     if !shouldHide {
                         
                         Button("Show The Answer") {
-                            
                             withAnimation(.linear(duration: 0.45), {
-                                type = wordModel?.usageType ?? ""
-                                meaning = wordModel?.meaning ?? ""
-                                sentense = wordModel?.sentense ?? ""
+                                type = dictWord?.usageType ?? ""
+                                meaning = dictWord?.meaning ?? ""
+                                sentense = dictWord?.sentense ?? ""
                             })
-                           shouldHide = true
+                            shouldHide = true
                         }.font(.title2)
                             .background(Color(red: 227/255
-                                                   , green: 239/255
-                                                   , blue: 205/255))
-                          .foregroundColor(Color.black)
-                          .padding([.top], 180)
-                    } else {
-                        
+                                              , green: 239/255
+                                              , blue: 205/255))
+                            .foregroundColor(Color.black)
+                            .padding([.top], 180)
                     }
                     
                     Text(self.type)
@@ -89,24 +85,27 @@ struct ContentView: View {
                     
                     Button("Move to Next ") {
                         withAnimation(.easeInOut(duration: 0.5), {
+                            type = ""
+                            meaning = ""
+                            sentense = ""
                             self.opacity = 0
                         })
                         
                         self.shouldHide = false
-                        self.wordModel = self.dictionaryViewModel.generateTherandomElement()
+                        dictionaryViewModel.updateTheObserver()
                         
                         withAnimation(.easeInOut(duration: 1), {
-                            word = wordModel?.word ?? ""
-                            type = ""
-                            meaning = ""
-                            sentense = ""
                             self.opacity = 1
                         })
                     }.font(.title2)
-                    .foregroundColor(Color.black)
+                        .foregroundColor(Color.black)
                 }.padding(.bottom, 0)
             }.padding([.leading, .trailing], 15)
         }.padding(40)
+            .onReceive(dictionaryViewModel.dictWordSubject.publisher) { dictWordValue in
+                
+                dictWord = dictWordValue
+            }
     }
 }
 
@@ -118,7 +117,7 @@ struct ContentView_Previews: PreviewProvider {
 
 
 extension UIImage {
-
+    
     func alpha(_ value:CGFloat) -> UIImage {
         UIGraphicsBeginImageContextWithOptions(size, false, scale)
         draw(at: CGPoint.zero, blendMode: .normal, alpha: value)

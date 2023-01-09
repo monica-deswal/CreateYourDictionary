@@ -9,29 +9,36 @@ import Foundation
 import Combine
 import SwiftUI
 
-class DictionaryViewModel {
+enum FetchError: Error {
+    case unableToRetriveData
+}
+
+class DictionaryViewModel: ObservableObject {
     
     var modelObject: [DictWord]?
+    @Published var dictWordSubject: DictWord?
     
     init() {
         let url = Bundle.main.url(forResource: "DictionaryObject", withExtension: "json")!
         do {
             let data = try? Data(contentsOf: url)
             let model = try? JSONDecoder().decode(MyDictModel.self, from: data!)
-            print("the value of the data model \(model)")
-            self.modelObject = model?.words
-            print("the value of the data model \(modelObject)")
+            let modelObject = model?.words?.compactMap({ $0 })
+            self.modelObject = modelObject
+            updateTheObserver()
         } catch let error {
             print("there is some error \(error)")
         }
     }
     
-    
-    func generateTherandomElement() -> DictWord? {
-        return modelObject?.randomElement() ?? nil
+    func updateTheObserver() {
+        dictWordSubject = self.generateTherandomElement()
     }
     
-   
+    
+    private func generateTherandomElement() -> DictWord? {
+        return self.modelObject?.randomElement()
+    }
 }
 
 struct MyDictModel : Codable {
@@ -62,6 +69,16 @@ struct DictWord : Codable {
         case usageType = "UsageType"
         case meaning = "Meaning"
         case sentense = "Sentense"
+    }
+    
+    init(word: String? = ""
+         , usageType : String? = ""
+         , meaning: String? = ""
+         , sentense : String? = "") {
+        self.word = word
+        self.usageType = usageType
+        self.meaning = meaning
+        self.sentense = sentense
     }
 
     init(from decoder: Decoder) throws {
